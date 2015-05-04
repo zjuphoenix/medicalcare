@@ -4,14 +4,10 @@ import java.io.IOException;
 
 public class App {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Client client = new Client();
-        try {
-			client.startECG();
-			client.dataCollect();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        client.startECG();
+		client.dataCollect();
 	}
 
 }

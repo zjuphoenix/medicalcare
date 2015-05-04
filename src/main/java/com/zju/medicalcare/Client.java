@@ -29,7 +29,8 @@ public class Client {
 	@SuppressWarnings("unchecked")
 	public Client() {
 		try {
-			socket = new Socket("localhost", 10001);
+			socket = new Socket("192.168.1.104",60129);
+			System.out.println("连接设备成功");
 			bos = new BufferedOutputStream(socket.getOutputStream());
 			bis = new BufferedInputStream(socket.getInputStream());
 			executor = Executors.newSingleThreadExecutor();

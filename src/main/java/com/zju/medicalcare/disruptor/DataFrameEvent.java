@@ -7,7 +7,8 @@ public class DataFrameEvent {
 	private byte[] data;
 	public DataFrameEvent() {
 		pos = 0;
-		data = new byte[3014];
+		//data = new byte[3014];
+		data = new byte[3513];
 	}
 	
 	public int getType() {
@@ -40,5 +41,7 @@ public class DataFrameEvent {
 		pos+=len;
 	}
 	
-	
+	public int remainDataLength(){
+		return length - pos;
+	}
 }
