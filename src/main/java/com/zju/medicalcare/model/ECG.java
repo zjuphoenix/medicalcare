@@ -9,5 +9,5 @@ public class ECG {
 	public char[] ecg1 = new char[500];
 	public char[] ecg2 = new char[500];
 	public char[] ecg3 = new char[500];
-	public int flag;
+	public byte[] flag = new byte[500];
 }

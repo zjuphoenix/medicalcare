@@ -7,7 +7,6 @@ public class DataFrameEvent {
 	private byte[] data;
 	public DataFrameEvent() {
 		pos = 0;
-		//data = new byte[3014];
 		data = new byte[3513];
 	}
 	
