@@ -1,6 +1,12 @@
 package com.zju.medicalcare.disruptor;
 
+import java.io.File;
+import java.io.RandomAccessFile;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 import java.util.Arrays;
+
 import com.lmax.disruptor.EventHandler;
 import com.zju.medicalcare.command.CommandResult;
 import com.zju.medicalcare.description.ModuleDescriptionInfo;
@@ -15,6 +21,7 @@ import com.zju.medicalcare.modelstate.BloodOxygenState;
 import com.zju.medicalcare.modelstate.BloodPressureState;
 import com.zju.medicalcare.modelstate.BloodSugarState;
 import com.zju.medicalcare.modelstate.ECGState;
+import com.zju.medicalcare.util.FileUtil;
 
 public class DataFrameEventHandler implements EventHandler<DataFrameEvent> {
 
@@ -31,7 +38,10 @@ public class DataFrameEventHandler implements EventHandler<DataFrameEvent> {
 	private BloodSugarState bloodSugarState = new BloodSugarState();
 	private BloodKetone bloodKetone = new BloodKetone();
 	private BloodKetoneState bloodKetoneState = new BloodKetoneState();
+	
+	private int count = 0;
 		
+	@SuppressWarnings("resource")
 	@Override
 	public void onEvent(DataFrameEvent dataFrameEvent, long sequence,
 			boolean endOfBatch) throws Exception {
@@ -72,7 +82,7 @@ public class DataFrameEventHandler implements EventHandler<DataFrameEvent> {
 				ecg.ST3 = (data[9]&0xff << 8) + (data[10]&0xff);
 				ecg.heartrate = (data[11]&0xff << 8) + (data[12]&0xff);
 				int k = 0;
-				int i = 0;
+				int i = 13;
 				while (k < 500) {
 					ecg.ecg1[k++] = (char) ((data[i++]&0xff << 8) + (data[i++]&0xff));
 				}
@@ -88,7 +98,14 @@ public class DataFrameEventHandler implements EventHandler<DataFrameEvent> {
 				while (k<500) {
 					ecg.flag[k++] = data[i++];
 				}
-				
+				File file = new File(this.getClass().getResource("/")+"ecg/"+(count++));
+				file.createNewFile();
+		        RandomAccessFile raf = new RandomAccessFile(file, "rw");
+		        FileChannel fileChannel = raf.getChannel();
+		        MappedByteBuffer mbb = fileChannel.map(MapMode.READ_WRITE, 0, 3000);
+		        mbb.put(data, 13, 3000);
+		        FileUtil.unmap(mbb);
+		        fileChannel.close();
 				System.out.println("心电模块数据        "+"长度:"+dataFrameEvent.getLength());
 			} else if (modelType == 2) {// 模块状态
 				ecgState.wirestate = data[3];
